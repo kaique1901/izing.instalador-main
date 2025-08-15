@@ -246,7 +246,7 @@ system_puppeteer_dependencies() {
   sleep 2
 
   sudo su - root <<EOF
-apt install -y ufw chromium-browser apt-transport-https ffmpeg fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 ca-certificates software-properties-common curl libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils python2-minimal build-essential libxshmfence-dev nginx
+ apt install -y ufw chromium-browser apt-transport-https ffmpeg fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 ca-certificates software-properties-common curl libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils python2-minimal build-essential libxshmfence-dev
 EOF
 
   sleep 2
@@ -293,47 +293,6 @@ EOF
 
   sleep 2
 }
-
-#######################################
-# installs certbot
-# Arguments:
-#   None
-#######################################
-system_certbot_install() {
-  print_banner
-  printf "${WHITE} 💻 Instalando certbot...${GRAY_LIGHT}"
-  printf "\n\n"
-
-  sleep 2
-
-  sudo su - root <<EOF
-  apt-get remove certbot
-  snap install --classic certbot
-  ln -s /snap/bin/certbot /usr/bin/certbot
-EOF
-
-  sleep 2
-}
-
-#######################################
-# installs nginx
-# Arguments:
-#   None
-#######################################
-system_nginx_install() {
-  print_banner
-  printf "${WHITE} 💻 Instalando nginx...${GRAY_LIGHT}"
-  printf "\n\n"
-
-  sleep 2
-
-  sudo su - root <<EOF
-  rm /etc/nginx/sites-enabled/default
-EOF
-
-  sleep 2
-}
-
 #######################################
 # install_chrome
 # Arguments:
@@ -354,77 +313,6 @@ EOF
   sleep 2
 }
 
-#######################################
-# restarts nginx
-# Arguments:
-#   None
-#######################################
-system_nginx_restart() {
-  print_banner
-  printf "${WHITE} 💻 reiniciando nginx...${GRAY_LIGHT}"
-  printf "\n\n"
-
-  sleep 2
-
-  sudo su - root <<EOF
-  service nginx restart
-EOF
-
-  sleep 2
-}
-
-#######################################
-# setup for nginx.conf
-# Arguments:
-#   None
-#######################################
-system_nginx_conf() {
-  print_banner
-  printf "${WHITE} 💻 configurando nginx...${GRAY_LIGHT}"
-  printf "\n\n"
-
-  sleep 2
-
-sudo su - root << EOF
-
-cat > /etc/nginx/conf.d/izingio.conf << 'END'
-client_max_body_size 100M;
-large_client_header_buffers 16 5120k;
-END
-
-EOF
-
-  sleep 2
-}
-
-#######################################
-# installs nginx
-# Arguments:
-#   None
-#######################################
-system_certbot_setup() {
-  print_banner
-  printf "${WHITE} 💻 Configurando certbot...${GRAY_LIGHT}"
-  printf "\n\n"
-
-  sleep 2
-
-  backend_domain=$(echo "${backend_url/https:\/\/}")
-  frontend_domain=$(echo "${frontend_url/https:\/\/}")
-  admin_domain=$(echo "${admin_url/https:\/\/}")
-
-  sudo su - root <<EOF
-  certbot -m $deploy_email \
-          --nginx \
-          --agree-tos \
-          --non-interactive \
-          --domains $backend_domain,$frontend_domain
-EOF
-
-  sleep 60
-}
-
-#######################################
 # reboot
 # Arguments:
 #   None
